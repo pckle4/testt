@@ -1,0 +1,20 @@
+@reference "../../../styles.css";
+
+.chart-bar {
+  @apply transition-all duration-500;
+  transition-property: height, y, filter;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chart-bar:hover {
+  filter: brightness(1.1);
+}
+
+.donut-segment {
+  @apply transition-all duration-700 ease-in-out cursor-pointer;
+  transition-property: stroke-dasharray, stroke-dashoffset, filter;
+}
+
+.donut-segment:hover {
+  filter: brightness(1.15);
+}

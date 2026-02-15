@@ -1,0 +1,129 @@
+<div class="min-h-screen bg-bg-subtle p-6 md:p-8">
+  <header class="mb-8 flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-heading">Edit Customer</h2>
+      <p class="text-sm text-body mt-1">Update customer details. Only name and email can be modified.</p>
+    </div>
+    <a routerLink="/customers"
+      class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-heading transition hover:bg-gray-50 hover:border-primary hover:text-primary active:scale-[0.98]">
+      Back to List
+    </a>
+  </header>
+
+  @if (pageLoading()) {
+  <div class="mx-auto max-w-3xl rounded-xl bg-white p-12 shadow-sm border border-border text-center">
+    <div class="inline-flex items-center gap-3">
+      <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+        </path>
+      </svg>
+      <span class="text-sm font-medium text-body">Loading customer details...</span>
+    </div>
+  </div>
+  } @else {
+  <div class="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-sm border border-border md:p-8">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-6">
+
+      <div>
+        <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-2">
+            <label class="text-sm font-medium text-body">Customer ID</label>
+            <input type="text" [value]="customerId()" readonly
+              class="w-full rounded-lg border border-border bg-gray-50 px-4 py-2.5 text-sm text-heading font-mono focus:outline-none cursor-default" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="editName" class="text-sm font-medium text-heading">Full Name <span
+                class="text-accent-red">*</span></label>
+            <input type="text" id="editName" formControlName="name" placeholder="e.g. Rahul Sharma"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+              [class.border-accent-red]="form.controls.name.invalid && form.controls.name.touched" />
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+            <span class="text-xs text-accent-red">Name is required</span>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="editEmail" class="text-sm font-medium text-heading">Email Address <span
+                class="text-accent-red">*</span></label>
+            <input type="email" id="editEmail" formControlName="email" placeholder="rahul@company.com"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+              [class.border-accent-red]="form.controls.email.invalid && form.controls.email.touched" />
+            @if (form.controls.email.invalid && form.controls.email.touched) {
+            <span class="text-xs text-accent-red">Valid email is required</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="editCompany" class="text-sm font-medium text-body">Company</label>
+            <input type="text" id="editCompany" formControlName="company"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" />
+          </div>
+
+          <div class="grid gap-2">
+            <label for="editPhone" class="text-sm font-medium text-body">Phone Number</label>
+            <input type="tel" id="editPhone" formControlName="phone"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-2">
+        <label for="editAddress" class="text-sm font-medium text-body">Address</label>
+        <input type="text" id="editAddress" formControlName="address"
+          class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" />
+      </div>
+
+      @if (formErr()) {
+      <div class="rounded-lg bg-red-50 p-3 text-sm text-accent-red border border-red-100 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd" />
+        </svg>
+        {{ formErr() }}
+      </div>
+      }
+
+      <div class="mt-4 flex items-center justify-end gap-3 pt-4 border-t border-border">
+        <a routerLink="/customers"
+          class="rounded-lg border border-border bg-white px-6 py-2.5 text-sm font-medium text-heading transition hover:bg-gray-50 cursor-pointer text-center"
+          [class.opacity-50]="formLoading()" [class.pointer-events-none]="formLoading()">
+          Cancel
+        </a>
+        <button type="submit"
+          class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+          [disabled]="formLoading()">
+          @if (formLoading()) {
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          Saving...
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd" />
+          </svg>
+          Save Changes
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+  }
+</div>

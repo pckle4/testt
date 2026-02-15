@@ -1,0 +1,327 @@
+<!-- edited: responsive padding and layout; no overflow on mobile -->
+<div class="min-h-screen bg-bg-subtle p-4 sm:p-6 md:p-10">
+  <header class="mb-6 md:mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+    <div class="min-w-0">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-heading">Client Leads</h2>
+      <p class="text-sm sm:text-base text-body mt-2 font-medium">Manage all your customer relationships in one place.</p>
+    </div>
+    @if (isAdmin()) { <!-- edited: hide Add Customer for non-admin - aligns with backend @PreAuthorize on create -->
+    <div class="flex items-center gap-3">
+      <a routerLink="/add-customer"
+        class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover active:scale-[0.98]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+            clip-rule="evenodd" />
+        </svg>
+        Add Customer
+      </a>
+    </div>
+    } <!-- edited: end admin check -->
+  </header>
+
+
+  @if (fetchError()) {
+  <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
+    <div class="flex items-center gap-3">
+      <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="text-sm font-medium">{{ fetchError() }}</p> <!-- edited: display error message -->
+    </div>
+  </div>
+  }
+
+  <div class="mb-4 md:mb-6">
+    <div class="flex flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
+      <div class="relative flex-1 min-w-0 w-full sm:min-w-[200px] sm:max-w-md">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-body" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" placeholder="Search by name, company, or email..."
+          class="w-full rounded-xl border border-border bg-white pl-12 pr-10 py-3 text-base text-heading placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
+          [value]="searchQuery()" (input)="onSearchInput($any($event.target).value)" />
+        @if (searchQuery()) {
+        <button (click)="clearSearch()"
+          class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-body hover:text-heading hover:bg-gray-100 transition-colors">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        }
+      </div>
+
+      <div class="w-full md:w-auto min-w-0 max-w-full">
+        <select
+          class="w-full rounded-xl border border-border bg-white px-4 py-3 text-base text-heading focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer transition-all"
+          [value]="searchField()" (change)="onSearchFieldChange($any($event.target).value)">
+          <option value="all">All Fields</option>
+          <option value="name">By Name</option>
+          <option value="email">By Email</option>
+          <option value="id">By ID</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- edited: table-container for overflow so dropdowns are visible (customers.css) -->
+  <div class="overflow-hidden rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 ring-1 ring-black/5">
+    <div class="table-container overflow-x-auto" (scroll)="onScroll()">
+      <table class="w-full text-left text-heading">
+        <thead class="bg-surface border-b border-border">
+          <tr>
+            <th scope="col"
+              class="px-6 py-4 text-xs font-extrabold uppercase tracking-widest text-body cursor-pointer hover:text-primary transition-colors select-none"
+              (click)="handleSort('name')">
+              <div class="flex items-center gap-1">
+                Client Name
+                <div class="flex flex-col">
+                  @if (sortColumn() === 'name' && sortDirection() === 'asc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7" />
+                  </svg>
+                  }
+                  @if (sortColumn() === 'name' && sortDirection() === 'desc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  }
+                  @if (sortColumn() !== 'name') {
+                  <svg class="h-3 w-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                      d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                  </svg>
+                  }
+                </div>
+              </div>
+            </th>
+            <th scope="col"
+              class="px-6 py-4 text-xs font-extrabold uppercase tracking-widest text-body cursor-pointer hover:text-primary transition-colors select-none"
+              (click)="handleSort('company')">
+              <div class="flex items-center gap-1">
+                Company
+                <div class="flex flex-col">
+                  @if (sortColumn() === 'company' && sortDirection() === 'asc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7" />
+                  </svg>
+                  }
+                  @if (sortColumn() === 'company' && sortDirection() === 'desc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  }
+                  @if (sortColumn() !== 'company') {
+                  <svg class="h-3 w-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                      d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                  </svg>
+                  }
+                </div>
+              </div>
+            </th>
+            <th scope="col"
+              class="px-6 py-4 text-xs font-extrabold uppercase tracking-widest text-body cursor-pointer hover:text-primary transition-colors select-none"
+              (click)="handleSort('email')">
+              <div class="flex items-center gap-1">
+                Contact
+                <div class="flex flex-col">
+                  @if (sortColumn() === 'email' && sortDirection() === 'asc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7" />
+                  </svg>
+                  }
+                  @if (sortColumn() === 'email' && sortDirection() === 'desc') {
+                  <svg class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  }
+                  @if (sortColumn() !== 'email') {
+                  <svg class="h-3 w-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                      d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                  </svg>
+                  }
+                </div>
+              </div>
+            </th>
+            <th scope="col"
+              class="px-6 py-4 text-right text-xs font-extrabold uppercase tracking-widest text-body w-24">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @if (loading()) {
+          @for (i of [1,2,3,4,5]; track $index) {
+          <tr class="animate-pulse">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-4">
+                <div class="h-10 w-10 rounded-full bg-gray-200"></div>
+                <div class="h-4 w-32 rounded bg-gray-200"></div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="h-4 w-24 rounded bg-gray-200"></div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="h-4 w-40 rounded bg-gray-200"></div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="inline-block h-9 w-9 rounded-lg bg-gray-200"></div>
+            </td>
+          </tr>
+          }
+          } @else {
+          @for (customer of customersList(); track customer.id) {
+          <tr class="hover:bg-gray-50/80 transition-colors group">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-4">
+                <img [src]="customer.avatar" [alt]="customer.name"
+                  class="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md ring-1 ring-border">
+                <a [routerLink]="'/customer-details/' + customer.id"
+                  class="font-bold text-heading text-base group-hover:text-primary transition-colors hover:underline cursor-pointer">{{
+                  customer.name
+                  }}</a>
+              </div>
+            </td>
+
+            <td class="px-6 py-4 font-semibold text-sm text-body">{{ customer.company }}</td>
+
+            <td class="px-6 py-4 font-semibold text-sm text-primary max-w-[240px]">
+              <a [href]="'mailto:' + customer.email" class="hover:underline flex items-center gap-2 min-w-0">
+                <div
+                  class="rounded-full bg-[#f0f4ff] p-1.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
+                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span class="truncate">{{ customer.email }}</span>
+              </a>
+            </td>
+
+            <td class="px-6 py-4 text-right" style="overflow: visible;">
+              <div class="action-menu-wrapper">
+                <button type="button" (click)="toggleMenu(customer.id, $event)"
+                  class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white text-body transition-all hover:bg-gray-50 hover:text-heading hover:border-gray-300 focus:outline-none"
+                  [class.ring-2]="openMenuId() === customer.id" [class.ring-primary]="openMenuId() === customer.id"
+                  [class.ring-opacity-30]="openMenuId() === customer.id">
+                  <span class="sr-only">Open menu</span>
+                  <svg class="h-4 w-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                  </svg>
+                </button>
+
+                @if (openMenuId() === customer.id && dropdownPosition()) {
+                <div class="action-dropdown" [style.top.px]="dropdownPosition()?.top"
+                  [style.left.px]="dropdownPosition()?.left">
+                  <a [routerLink]="'/customer-details/' + customer.id"
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-heading hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View
+                  </a>
+                  @if (isAdmin()) {
+                  <!-- edited: hide Edit for non-admin - aligns with backend @PreAuthorize on update -->
+                  <a [routerLink]="'/edit-customer/' + customer.id"
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-heading hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </a>
+                  } <!-- edited: end admin check -->
+                  @if (isAdmin()) {
+                  <!-- edited: hide Delete for non-admin - aligns with backend @PreAuthorize on delete -->
+                  <button (click)="deleteCustomer(customer.id)"
+                    class="delete-btn flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                  } <!-- edited: end admin check -->
+                </div>
+                }
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="4" class="px-6 py-12 text-center text-body">
+              No customers found. <a routerLink="/add-customer" class="text-primary font-medium hover:underline">Add
+                one?</a>
+            </td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (totalPages() > 1) {
+  <div
+    class="pagination-bar mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 px-6 py-4">
+    <p class="text-sm font-medium text-body">
+      Showing <span class="font-bold text-heading">{{ (currentPage() - 1) * pageSize() + 1 }}</span>–<span
+        class="font-bold text-heading">{{ currentPage() * pageSize() > totalFilteredCount() ? totalFilteredCount() :
+        currentPage() * pageSize() }}</span> of <span class="font-bold text-heading">{{ totalFilteredCount() }}</span>
+      customers
+    </p>
+    <div class="flex items-center gap-1.5">
+      <button (click)="firstPage()" [disabled]="currentPage() === 1"
+        class="pagination-btn h-9 w-9 rounded-lg flex items-center justify-center text-body transition-all hover:bg-primary/5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-body"
+        title="First page">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+      </button>
+      <button (click)="prevPage()" [disabled]="currentPage() === 1"
+        class="pagination-btn h-9 w-9 rounded-lg flex items-center justify-center text-body transition-all hover:bg-primary/5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-body"
+        title="Previous page">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      @for (page of visiblePages(); track $index) {
+      @if (page === '...') {
+      <span class="h-9 w-9 flex items-center justify-center text-sm text-body/50 select-none">…</span>
+      } @else {
+      <button (click)="goToPage(+page)" class="pagination-page h-9 w-9 rounded-lg text-sm font-bold transition-all"
+        [class.bg-primary]="currentPage() === page" [class.text-white]="currentPage() === page"
+        [class.shadow-md]="currentPage() === page" [class.shadow-primary/30]="currentPage() === page"
+        [class.ring-2]="currentPage() === page" [class.ring-primary/20]="currentPage() === page"
+        [class.text-body]="currentPage() !== page" [class.hover:bg-primary/5]="currentPage() !== page"
+        [class.hover:text-primary]="currentPage() !== page">{{ page }}</button>
+      }
+      }
+
+      <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+        class="pagination-btn h-9 w-9 rounded-lg flex items-center justify-center text-body transition-all hover:bg-primary/5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-body"
+        title="Next page">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      <button (click)="lastPage()" [disabled]="currentPage() === totalPages()"
+        class="pagination-btn h-9 w-9 rounded-lg flex items-center justify-center text-body transition-all hover:bg-primary/5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-body"
+        title="Last page">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  }
+</div>

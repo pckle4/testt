@@ -1,0 +1,582 @@
+<!-- edited: modernized layout — responsive padding, clearer hierarchy, theme-aligned -->
+<div class="min-h-screen bg-bg-subtle text-heading">
+  <div class="mx-auto w-full max-w-6xl flex flex-col gap-6 sm:gap-8 p-4 sm:p-6 md:py-10 md:px-6">
+    <!-- Breadcrumb + title -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="min-w-0">
+        <nav class="flex items-center gap-2 text-sm font-medium text-body">
+          <a routerLink="/customers" class="hover:text-primary transition-colors truncate">Customers</a>
+          <span class="text-border shrink-0">/</span>
+          <span class="text-primary font-semibold truncate">Details</span>
+          @if (hasCustomer()) {
+            <span class="ml-2 shrink-0 rounded-full bg-surface px-2.5 py-0.5 text-xs font-semibold text-body ring-1 ring-border">ID {{ customer()?.id }}</span>
+          }
+        </nav>
+        <h1 class="mt-1 text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-heading">Customer Profile</h1>
+      </div>
+    </div>
+
+    @if (loading() && !hasCustomer() && !notFound()) {
+    <section class="mx-auto w-full max-w-md rounded-2xl border border-border bg-white px-6 py-14 sm:py-16 text-center shadow-lg">
+      <div class="flex justify-center">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-surface border-t-primary"></div>
+      </div>
+      <p class="mt-4 text-base font-medium text-body">Loading customer details…</p>
+    </section>
+    }
+
+   
+    @if (error()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
+      <div class="flex items-center gap-3">
+        <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-sm font-medium">{{ error() }}</p> <!-- edited: display error message -->
+      </div>
+    </div>
+    }
+
+    @if (notFound()) {
+    <section class="mx-auto w-full max-w-lg rounded-2xl border border-red-200 bg-white px-6 py-12 sm:px-10 sm:py-14 text-center shadow-xl">
+      <div class="flex justify-center">
+        <div class="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-red-50 text-accent-red">
+          <svg class="h-8 w-8 sm:h-10 sm:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+          </svg>
+        </div>
+      </div>
+      <h2 class="mt-6 text-xl sm:text-2xl font-extrabold text-heading">Customer Not Found</h2>
+      <p class="mt-2 text-sm sm:text-base text-body">The customer you're looking for doesn't exist or may have been deleted.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a routerLink="/customers"
+          class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover active:scale-[0.98]">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Customers
+        </a>
+        <a routerLink="/dashboard"
+          class="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-bold text-body transition hover:border-primary hover:text-primary active:scale-[0.98]">
+          Dashboard
+        </a>
+      </div>
+    </section>
+    }
+
+    @if (hasCustomer()) {
+    <section class="grid gap-6">
+      <!-- edited: modernized profile card — theme primary, status badge, responsive -->
+      <div class="customer-header-card rounded-2xl border border-border bg-white p-5 sm:p-6 md:p-8 shadow-lg shadow-gray-100/50">
+        <div class="flex flex-wrap items-start justify-between gap-4 sm:gap-6">
+          <div class="flex items-center gap-4 sm:gap-5 min-w-0">
+            <div class="flex h-14 w-14 sm:h-[72px] sm:w-[72px] shrink-0 items-center justify-center rounded-2xl bg-primary text-xl sm:text-2xl font-bold text-white shadow-lg shadow-primary/25 ring-2 ring-primary/20">
+              {{ customer()?.name?.charAt(0) }}
+            </div>
+            <div class="min-w-0 grid gap-0.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-body/70">Customer</span>
+                @if (customer()?.status) {
+                  <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide
+                    {{ (customer()?.status || '').toLowerCase() === 'active' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : (customer()?.status || '').toLowerCase() === 'pending' ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' : 'bg-surface text-body ring-1 ring-border' }}">
+                    {{ customer()?.status }}
+                  </span>
+                }
+              </div>
+              <div class="flex items-center gap-2 min-w-0">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-heading truncate">{{ customer()?.name }}</h2>
+                <button (click)="copyToClipboard(customer()?.name, 'name')" class="copy-btn shrink-0"
+                  [class.copied]="copiedField() === 'name'" title="Copy Name">
+                  @if (copiedField() === 'name') {
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                  } @else {
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                  }
+                </button>
+              </div>
+              <p class="text-sm sm:text-base text-body truncate">{{ customer()?.company }}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center shrink-0">
+            @if (isAdmin()) {
+            <a [routerLink]="'/edit-customer/' + customer()?.id"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-semibold text-body hover:border-primary hover:bg-primary/5 hover:text-primary transition-all active:scale-[0.98]">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit
+            </a>
+            }
+          </div>
+        </div>
+
+        <div class="mt-6 sm:mt-8 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="info-card rounded-xl border border-border bg-gradient-to-br from-white to-surface/30 p-4 sm:p-5 transition-all hover:border-primary/40 hover:shadow-md">
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-body/70">Email Address</span>
+            <strong class="mt-1.5 block text-lg text-heading truncate">{{ customer()?.email }}</strong>
+            <button (click)="copyToClipboard(customer()?.email, 'email')" class="copy-btn"
+              [class.copied]="copiedField() === 'email'" title="Copy Email">
+              @if (copiedField() === 'email') {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              } @else {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              }
+            </button>
+          </div>
+          <div class="info-card rounded-xl border border-border bg-gradient-to-br from-white to-surface/30 p-4 sm:p-5 transition-all hover:border-primary/40 hover:shadow-md">
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-body/70">Phone Number</span>
+            <strong class="mt-1.5 block text-lg text-heading">{{ customer()?.phone }}</strong>
+            <button (click)="copyToClipboard(customer()?.phone, 'phone')" class="copy-btn"
+              [class.copied]="copiedField() === 'phone'" title="Copy Phone">
+              @if (copiedField() === 'phone') {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              } @else {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              }
+            </button>
+          </div>
+          <div class="info-card rounded-xl border border-border bg-gradient-to-br from-white to-surface/30 p-4 sm:p-5 transition-all hover:border-primary/40 hover:shadow-md">
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-body/70">Address</span>
+            <strong class="mt-1.5 block text-lg text-heading truncate">{{ customer()?.address || 'N/A' }}</strong>
+            <button (click)="copyToClipboard(customer()?.address, 'address')" class="copy-btn"
+              [class.copied]="copiedField() === 'address'" title="Copy Address">
+              @if (copiedField() === 'address') {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              } @else {
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-5 sm:mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
+          <span class="stat-chip inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {{ contacts().length }} Contact{{ contacts().length !== 1 ? 's' : '' }}
+          </span>
+          <span class="stat-chip inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            {{ notes().length }} Note{{ notes().length !== 1 ? 's' : '' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-border bg-white shadow-xl shadow-gray-100/50 overflow-hidden">
+        <div class="flex items-center justify-center px-4 sm:px-6 py-4 sm:py-5">
+          <div class="pill-tabs">
+            <button type="button" class="pill-tab" [class.active]="activeTab() === 'contacts'"
+              (click)="setTab('contacts')">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Contacts
+              <span class="tab-badge">{{ contacts().length }}</span>
+            </button>
+            <button type="button" class="pill-tab" [class.active]="activeTab() === 'notes'" (click)="setTab('notes')">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Notes
+              <span class="tab-badge">{{ notes().length }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 pt-2">
+          @if (activeTab() === 'contacts') {
+          <div class="tab-content">
+            <div class="mb-5 sm:mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface/50 p-4 sm:p-5">
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-heading">Team Members</h3>
+                  <p class="text-sm font-medium text-body">Manage contacts for this customer</p>
+                </div>
+              </div>
+
+              <button (click)="openContactModal()"
+                class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/25 transition hover:bg-primary-hover active:scale-[0.98]">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Contact
+              </button>
+            </div>
+
+            @if (contacts().length === 0) {
+            <div class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface/30 py-12 sm:py-16 text-center">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-3">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-body">No contacts yet</p>
+              <button (click)="openContactModal()" class="mt-2 text-sm font-bold text-primary hover:underline">Add your first contact</button>
+            </div>
+            } @else {
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-start">
+              @for (contact of contacts(); track contact.id) {
+              <div
+                class="rounded-xl border border-border bg-white p-5 shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md cursor-pointer group"
+                (click)="viewContact(contact)">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xl font-bold text-primary transition-transform duration-200 group-hover:scale-105">
+                    {{ contact.name.charAt(0) }}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <h4 class="truncate text-base font-bold text-heading group-hover:text-primary transition-colors">{{
+                      contact.name }}</h4>
+                    <p class="truncate text-sm font-medium text-body">{{ contact.position }}</p>
+                    <p class="truncate text-xs text-body/60 mt-0.5">{{ contact.email }}</p>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+            }
+
+            @if (viewingContact()) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-heading/40 backdrop-blur-sm">
+              <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl modal-panel border border-border">
+                <div class="flex items-center justify-between border-b border-border px-4 sm:px-6 py-4 sm:py-5 bg-gradient-to-br from-surface to-primary/5">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      {{ viewingContact()?.name?.charAt(0) }}
+                    </div>
+                    <h3 class="text-lg font-bold text-heading">{{ viewingContact()?.name }}</h3>
+                  </div>
+                  <button (click)="closeViewContact()"
+                    class="rounded-full p-2 text-body hover:bg-white hover:text-heading transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="p-6 grid gap-4">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-body/60">Position</span>
+                    <p class="text-base font-medium text-heading mt-1">{{ viewingContact()?.position }}</p>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-body/60">Email</span>
+                    <p class="text-base font-medium text-heading mt-1">{{ viewingContact()?.email }}</p>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-body/60">Phone</span>
+                    <p class="text-base font-medium text-heading mt-1">{{ viewingContact()?.phone }}</p>
+                  </div>
+
+                  <div class="mt-4 flex gap-3 pt-4 border-t border-border">
+                    <button (click)="editContact(viewingContact()!)"
+                      class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:shadow-xl active:scale-[0.98] transition-all">
+                      Edit Contact
+                    </button>
+                    @if (isAdmin()) {
+                    <!-- edited: hide Delete for non-admin - aligns with backend @PreAuthorize on ContactController delete -->
+                    <button (click)="deleteContact(viewingContact()!.id)"
+                      class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-100 transition-colors">
+                      Delete
+                    </button>
+                    } <!-- edited: end admin check -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+
+            @if (isContactModalOpen()) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-heading/40 backdrop-blur-sm">
+              <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl modal-panel border border-border">
+                <div class="flex items-center justify-between border-b border-border px-4 sm:px-6 py-4 sm:py-5 bg-gradient-to-br from-surface to-primary/5">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-heading">
+                      {{ editingContactId() ? 'Edit Contact' : 'New Contact' }}
+                    </h3>
+                  </div>
+                  <button (click)="closeContactModal()"
+                    class="rounded-full p-2 text-body hover:bg-white hover:text-heading transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="p-6">
+                  <form [formGroup]="contactForm" (ngSubmit)="onSaveContact()" class="grid gap-4">
+                    <div class="grid gap-1.5">
+                      <label for="modalContactName" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Full Name <span class="text-red-500">*</span>
+                      </label>
+                      <input id="modalContactName" type="text" formControlName="name" placeholder="e.g. Rahul Sharma"
+                        class="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" />
+                    </div>
+                    <div class="grid gap-1.5">
+                      <label for="modalContactPosition" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Position <span class="text-red-500">*</span>
+                      </label>
+                      <input id="modalContactPosition" type="text" formControlName="position"
+                        placeholder="e.g. Project Manager"
+                        class="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="contactForm.get('position')?.invalid && contactForm.get('position')?.touched" />
+                    </div>
+                    <div class="grid gap-1.5">
+                      <label for="modalContactEmail" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Email <span class="text-red-500">*</span>
+                      </label>
+                      <input id="modalContactEmail" type="email" formControlName="email" placeholder="name@company.com"
+                        class="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" />
+                    </div>
+                    <div class="grid gap-1.5">
+                      <label for="modalContactPhone" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Phone <span class="text-red-500">*</span>
+                      </label>
+                      <input id="modalContactPhone" type="tel" formControlName="phone" placeholder="+91 99999 99999"
+                        class="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" />
+                    </div>
+
+                    <div class="mt-2 flex gap-3">
+                      <button type="button" (click)="closeContactModal()"
+                        class="flex-1 rounded-xl border border-border bg-white py-3 text-sm font-bold text-body hover:bg-gray-50 transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit"
+                        class="flex-[2] rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-hover active:scale-[0.98] transition-all">
+                        {{ editingContactId() ? 'Save Changes' : 'Add Contact' }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+
+          @if (activeTab() === 'notes') {
+          <div class="tab-content">
+            <div class="mb-5 sm:mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface/50 p-4 sm:p-5">
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-heading">Customer Notes</h3>
+                  <p class="text-xs sm:text-sm font-medium text-body">Manage notes and interaction history</p>
+                </div>
+              </div>
+              <button (click)="openNoteModal()"
+                class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/25 transition hover:bg-primary-hover active:scale-[0.98]">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Note
+              </button>
+            </div>
+
+            @if (notes().length === 0) {
+            <div class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface/30 py-12 sm:py-16 text-center">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-3">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-body">No notes yet</p>
+              <button (click)="openNoteModal()" class="mt-2 text-sm font-bold text-primary hover:underline">Add your first note</button>
+            </div>
+            } @else {
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-start">
+              @for (note of notes(); track note.id) {
+              <div
+                class="w-full rounded-xl border border-border bg-white p-5 shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md cursor-pointer group flex flex-col"
+                (click)="viewNote(note)">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0 flex-1">
+                    <h4
+                      class="text-sm font-bold text-heading group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                      {{
+                      note.title }}</h4>
+                    <div class="flex items-center gap-1.5 mt-2 text-xs font-medium text-body">
+                      <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      @if (note.updatedAt) {
+                      <span
+                        class="inline-flex items-center gap-1 rounded bg-primary-light px-1.5 py-0.5 text-[10px] font-semibold text-primary-dark uppercase tracking-wide">Updated</span>
+                      <span>{{ note.updatedAt | date:'dd MMM yyyy' }}</span>
+                      <span class="opacity-60">·</span>
+                      <span class="opacity-70">{{ note.updatedAt | date:'h:mm a' }}</span>
+                      } @else {
+                      <span>{{ note.createdAt | date:'dd MMM yyyy' }}</span>
+                      <span class="opacity-60">·</span>
+                      <span class="opacity-70">{{ note.createdAt | date:'h:mm a' }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <p class="mt-2 text-xs leading-relaxed text-body line-clamp-3">{{ note.content }}</p>
+              </div>
+              }
+            </div>
+            }
+
+            @if (viewingNote()) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-heading/40 backdrop-blur-sm">
+              <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl modal-panel border border-border">
+                <div class="flex items-center justify-between border-b border-border px-4 sm:px-6 py-4 sm:py-5 bg-gradient-to-br from-surface to-primary/5">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-heading">Note Details</h3>
+                  </div>
+                  <button (click)="closeViewNote()"
+                    class="rounded-full p-2 text-body hover:bg-white hover:text-heading transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-heading mb-2">{{ viewingNote()?.title }}</h3>
+                  <div class="flex items-center gap-2 text-xs font-medium text-body mb-6">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ (viewingNote()?.updatedAt || viewingNote()?.createdAt) | date:'medium' }}
+                  </div>
+                  <div
+                    class="prose prose-sm max-w-none text-body bg-gray-50 rounded-lg p-4 leading-relaxed whitespace-pre-wrap border border-gray-100">
+                    {{ viewingNote()?.content }}</div>
+
+                  <div class="mt-6 flex gap-3 pt-4 border-t border-border">
+                    <button (click)="editNote(viewingNote()!)"
+                      class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:shadow-xl active:scale-[0.98] transition-all">
+                      Edit Note
+                    </button>
+                    @if (isAdmin()) {
+                    <!-- edited: hide Delete for non-admin - aligns with backend @PreAuthorize on NoteController delete -->
+                    <button (click)="deleteNote(viewingNote()!.id)"
+                      class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-100 transition-colors">
+                      Delete
+                    </button>
+                    } <!-- edited: end admin check -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+
+            @if (isNoteModalOpen()) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-heading/40 backdrop-blur-sm">
+              <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl modal-panel border border-border">
+                <div class="flex items-center justify-between border-b border-border px-4 sm:px-6 py-4 sm:py-5 bg-gradient-to-br from-surface to-primary/5">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-heading">
+                      {{ editingNoteId() ? 'Edit Note' : 'New Note' }}
+                    </h3>
+                  </div>
+                  <button (click)="closeNoteModal()"
+                    class="rounded-full p-2 text-body hover:bg-white hover:text-heading transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="p-6">
+                  <form [formGroup]="noteForm" (ngSubmit)="onSaveNote()" class="grid gap-4">
+                    <div class="grid gap-1.5">
+                      <label for="modalNoteTitle" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Title <span class="text-red-500">*</span>
+                      </label>
+                      <input id="modalNoteTitle" type="text" formControlName="title"
+                        placeholder="Give your note a title..."
+                        class="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="noteForm.get('title')?.invalid && noteForm.get('title')?.touched" />
+                    </div>
+                    <div class="grid gap-1.5">
+                      <label for="modalNoteText" class="text-xs font-bold text-body uppercase tracking-wider">
+                        Content <span class="text-red-500">*</span>
+                      </label>
+                      <textarea id="modalNoteText" rows="6" formControlName="content"
+                        placeholder="Write your note here..."
+                        class="w-full resize-none rounded-xl border border-border bg-white px-4 py-3 text-sm text-heading outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        [class.border-red-400]="noteForm.get('content')?.invalid && noteForm.get('content')?.touched"></textarea>
+                    </div>
+
+                    <div class="mt-2 flex gap-3">
+                      <button type="button" (click)="closeNoteModal()"
+                        class="flex-1 rounded-xl border border-border bg-white py-3 text-sm font-bold text-body hover:bg-gray-50 transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit"
+                        class="flex-[2] rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-hover active:scale-[0.98] transition-all">
+                        {{ editingNoteId() ? 'Save Changes' : 'Add Note' }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+    </section> }
+  </div>
+</div>

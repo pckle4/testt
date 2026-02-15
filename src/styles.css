@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+
+  /* ───── MRI Corporate Brand Palette ───── */
+
+  /* Primary — Bright Blue (grounding element, brand equity) */
+  --color-primary: #179AD7;
+  --color-primary-hover: #187ABF;       /* Medium Blue — hover / pressed */
+  --color-primary-light: #C2E6F2;       /* Light Blue  — tinted backgrounds */
+  --color-primary-dark: #044D66;        /* MRI Blue    — deep accent, icons */
+
+  /* Neutrals — text, borders, surfaces (all MRI Illustration Colors) */
+  --color-heading: #044D66;             /* MRI Blue — headings */
+  --color-body: #555555;               /* MRI Gray — body text */
+  --color-muted: #999999;             /* MRI Gray — secondary/placeholder text */
+  --color-border: #DDDDDD;            /* MRI Gray — borders, dividers */
+  --color-surface: #EDF6F9;           /* MRI Light Teal — card/surface bg */
+  --color-bg-subtle: #FFFFFF;         /* MRI White — page background */
+  --color-cover-bg: #C2E6F2;          /* MRI Light Blue — cover/hero panels */
+
+  /* Accents — sparingly, never dominant */
+  --color-accent-green: #00B188;       /* Light Green  — success, positive */
+  --color-accent-olive: #BCB336;       /* MRI Green    — highlight only, NOT text */
+  --color-accent-orange: #FAA41C;      /* Orange       — warning, attention */
+  --color-accent-red: #F36C3C;         /* Red Orange   — error, destructive */
+}
+
+/* Global micro-interactions */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth page transitions */
+router-outlet + * {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

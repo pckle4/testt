@@ -1,0 +1,265 @@
+<div class="min-h-screen bg-bg-subtle p-6 md:p-10">
+
+  <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-4xl font-extrabold text-heading">Dashboard</h2>
+      <p class="text-lg text-body mt-1 font-medium">Welcome back! Here's your CRM overview.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a routerLink="/add-customer"
+        class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover active:scale-[0.98]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+            clip-rule="evenodd" />
+        </svg>
+        Add Customer
+      </a>
+      <a routerLink="/customers"
+        class="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-bold text-body transition hover:border-primary hover:text-primary active:scale-[0.98]">
+        View All Customers
+      </a>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+    <div
+      class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-gray-200/60 hover:border-primary/20 group">
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-extrabold text-heading">{{ totalCustomers() }}</p>
+      <p class="text-base font-medium text-body mt-1">Total Customers</p>
+    </div>
+
+    <div
+      class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-gray-200/60 hover:border-primary/20 group">
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500 transition group-hover:bg-blue-500 group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-extrabold text-heading">{{ totalContacts() }}</p>
+      <p class="text-base font-medium text-body mt-1">Total Contacts</p>
+    </div>
+
+    <div
+      class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-gray-200/60 hover:border-primary/20 group">
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 transition group-hover:bg-emerald-500 group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-extrabold text-heading">{{ newCustomersThisMonth() }}</p>
+      <p class="text-base font-medium text-body mt-1">New This Month</p>
+    </div>
+
+    <div
+      class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-gray-200/60 hover:border-primary/20 group">
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500 transition group-hover:bg-violet-500 group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-extrabold text-heading">{{ totalNotes() }}</p>
+      <p class="text-base font-medium text-body mt-1">Total Notes</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+
+    <div class="lg:col-span-2 rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-xl font-bold text-heading">Monthly Overview</h3>
+          <p class="text-base text-body">Customers & Contacts over the last 6 months</p>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-bold">
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary"></span>
+            Customers</span>
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary-hover"></span>
+            Contacts</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <svg viewBox="0 0 600 200" class="w-full min-w-[500px]" preserveAspectRatio="xMidYMid meet">
+          <line x1="40" y1="20" x2="40" y2="170" stroke="#D9E6ED" stroke-width="1" />
+          <line x1="40" y1="170" x2="580" y2="170" stroke="#D9E6ED" stroke-width="1" />
+          <line x1="40" y1="135" x2="580" y2="135" stroke="#D9E6ED" stroke-width="0.5" stroke-dasharray="4" />
+          <line x1="40" y1="100" x2="580" y2="100" stroke="#D9E6ED" stroke-width="0.5" stroke-dasharray="4" />
+          <line x1="40" y1="65" x2="580" y2="65" stroke="#D9E6ED" stroke-width="0.5" stroke-dasharray="4" />
+          <line x1="40" y1="30" x2="580" y2="30" stroke="#D9E6ED" stroke-width="0.5" stroke-dasharray="4" />
+
+          @for (item of monthlyData(); track item.month; let i = $index) {
+          <rect [attr.x]="70 + i * 90" [attr.y]="170 - getBarHeight(item.customers)" width="25"
+            [attr.height]="getBarHeight(item.customers)" rx="4" fill="#179AD7" class="chart-bar" />
+          <rect [attr.x]="100 + i * 90" [attr.y]="170 - getBarHeight(item.contacts)" width="25"
+            [attr.height]="getBarHeight(item.contacts)" rx="4" fill="#187ABF" opacity="0.6" class="chart-bar" />
+          <text [attr.x]="90 + i * 90" y="190" text-anchor="middle" class="fill-body text-[11px] font-medium">{{
+            item.month }}</text>
+          <text [attr.x]="82 + i * 90" [attr.y]="165 - getBarHeight(item.customers)" text-anchor="middle"
+            class="fill-primary text-[9px] font-bold">{{ item.customers }}</text>
+          }
+        </svg>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6">
+      <h3 class="text-xl font-bold text-heading mb-1">Customer Status</h3>
+      <p class="text-base text-body mb-6">Distribution by current status</p>
+
+      <div class="flex justify-center mb-6">
+        <svg viewBox="0 0 128 128" class="w-40 h-40">
+          @for (seg of donutSegments(); track seg.label) {
+          <circle cx="64" cy="64" r="54" fill="none" [attr.stroke]="seg.color" stroke-width="16"
+            [attr.stroke-dasharray]="seg.dashArray" [attr.stroke-dashoffset]="'-' + seg.offset" stroke-linecap="round"
+            class="donut-segment" />
+          }
+          <text x="64" y="60" text-anchor="middle" class="fill-heading text-[22px] font-extrabold">{{ totalCustomers()
+            }}</text>
+          <text x="64" y="76" text-anchor="middle" class="fill-body text-[9px] font-medium">Total</text>
+        </svg>
+      </div>
+
+      <div class="grid gap-3">
+        @for (seg of donutSegments(); track seg.label) {
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full" [style.background]="seg.color"></span>
+            <span class="text-sm font-medium text-heading">{{ seg.label }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-heading">{{ seg.count }}</span>
+            <span class="text-xs text-body">({{ seg.percent }}%)</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <div class="lg:col-span-2 rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50">
+      <div class="flex items-center justify-between p-6 pb-4">
+        <div>
+          <h3 class="text-xl font-bold text-heading">New Customers</h3>
+          <p class="text-base text-body">Recently added customers</p>
+        </div>
+        <a routerLink="/customers" class="text-sm font-bold text-primary hover:text-primary-hover transition">View
+          All</a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead class="bg-surface border-y border-border">
+            <tr>
+              <th class="px-6 py-3.5 text-xs font-extrabold uppercase tracking-widest text-body">Customer</th>
+              <th class="px-6 py-3.5 text-xs font-extrabold uppercase tracking-widest text-body">Company</th>
+              <th class="px-6 py-3.5 text-xs font-extrabold uppercase tracking-widest text-body">Phone</th>
+              <th class="px-6 py-3.5 text-xs font-extrabold uppercase tracking-widest text-body">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (customer of paginatedCustomers(); track customer.id) {
+            <tr class="hover:bg-gray-50/80 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <img [src]="customer.avatar" [alt]="customer.name" class="h-9 w-9 rounded-full" />
+                  <div>
+                    <p class="text-sm font-bold text-heading">{{ customer.name }}</p>
+                    <p class="text-xs text-body">{{ customer.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm font-medium text-body">{{ customer.company }}</td>
+              <td class="px-6 py-4 text-sm font-medium text-body">{{ customer.phone }}</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize"
+                  [class]="getStatusClass((customer.status || '').toLowerCase())">
+                  {{ customer.status }}
+                </span>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="4" class="px-6 py-12 text-center text-body">
+                No customers yet. <a routerLink="/add-customer" class="text-primary font-medium hover:underline">Add
+                  one?</a>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+
+    </div>
+
+    <div class="rounded-2xl bg-white border border-border shadow-xl shadow-gray-100/50 p-6">
+      <h3 class="text-xl font-bold text-heading mb-1">Recent Activity</h3>
+      <p class="text-base text-body mb-5">Latest updates across your CRM</p>
+
+      <div class="grid gap-4">
+        @for (activity of activities(); track activity.text) {
+        <div class="flex gap-3 items-start">
+          <div class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+            [class.bg-primary/10]="activity.icon === 'customer'" [class.text-primary]="activity.icon === 'customer'"
+            [class.bg-blue-50]="activity.icon === 'contact'" [class.text-blue-500]="activity.icon === 'contact'"
+            [class.bg-amber-50]="activity.icon === 'note'" [class.text-amber-500]="activity.icon === 'note'">
+            @if (activity.icon === 'customer') {
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            }
+            @if (activity.icon === 'contact') {
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            }
+            @if (activity.icon === 'note') {
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            }
+          </div>
+          <div class="min-w-0">
+            <p class="text-base font-medium text-heading leading-snug">{{ activity.text }}</p>
+            <p class="text-sm text-body mt-0.5">{{ activity.time }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-white border-t border-border py-4 px-6 md:px-10">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-body">
+    <span>&copy; {{ currentTime() | date:'yyyy' }} CRM Suite. All rights reserved.</span>
+    <span class="font-medium text-heading">{{ currentTime() | date:'hh:mm:ss a' }}</span>
+  </div>
+</footer>

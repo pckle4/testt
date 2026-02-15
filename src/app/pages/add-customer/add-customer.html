@@ -1,0 +1,120 @@
+<!-- edited: responsive layout; no overflow on small screens -->
+<div class="min-h-screen bg-bg-subtle p-4 sm:p-6 md:p-8">
+  <header class="mb-6 md:mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div class="min-w-0">
+      <h2 class="text-xl sm:text-2xl font-bold text-heading">Add Customer</h2>
+      <p class="text-sm text-body mt-1">Create a new customer profile and add them to your CRM.</p>
+    </div>
+    <a routerLink="/customers"
+      class="shrink-0 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-heading transition hover:bg-gray-50 hover:border-primary hover:text-primary active:scale-[0.98]">
+      Back to List
+    </a>
+  </header>
+
+  <div class="mx-auto max-w-3xl min-w-0 rounded-xl bg-white p-4 sm:p-6 md:p-8 shadow-sm border border-border overflow-hidden">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-6">
+
+      <div>
+        <h3 class="text-lg font-semibold text-heading mb-4 border-b border-border pb-2">Personal Information</h3>
+        <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="customerName" class="text-sm font-medium text-heading">Full Name <span
+                class="text-red-500">*</span></label>
+            <input type="text" id="customerName" formControlName="name" [disabled]="formLoading()"
+              placeholder="e.g. Rahul Sharma"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              [class.border-red-500]="form.controls.name.invalid && form.controls.name.touched" />
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+            <span class="text-xs text-red-500">Name is required</span>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="customerEmail" class="text-sm font-medium text-heading">Email Address <span
+                class="text-red-500">*</span></label>
+            <input type="email" id="customerEmail" formControlName="email" placeholder="rahul@company.com"
+              [disabled]="formLoading()"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              [class.border-red-500]="form.controls.email.invalid && form.controls.email.touched" />
+            @if (form.controls.email.invalid && form.controls.email.touched) {
+            <span class="text-xs text-red-500">Valid email is required</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <h3 class="text-lg font-semibold text-heading mb-4 border-b border-border pb-2">Business Details</h3>
+        <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="customerCompany" class="text-sm font-medium text-heading">Company <span
+                class="text-red-500">*</span></label>
+            <input type="text" id="customerCompany" formControlName="company" [disabled]="formLoading()"
+              placeholder="e.g. Tech Solutions Pvt Ltd"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              [class.border-red-500]="form.controls.company.invalid && form.controls.company.touched" />
+          </div>
+
+          <div class="grid gap-2">
+            <label for="customerPhone" class="text-sm font-medium text-heading">Phone Number <span
+                class="text-red-500">*</span></label>
+            <input type="tel" id="customerPhone" formControlName="phone" [disabled]="formLoading()"
+              placeholder="+91 99999 99999"
+              class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              [class.border-red-500]="form.controls.phone.invalid && form.controls.phone.touched" />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-2">
+        <label for="customerAddress" class="text-sm font-medium text-heading">Address</label>
+        <input type="text" id="customerAddress" formControlName="address" [disabled]="formLoading()"
+          placeholder="e.g. 123 MG Road, Mumbai"
+          class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-heading placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors" />
+      </div>
+
+
+
+
+      @if (formErr()) {
+      <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd" />
+        </svg>
+        {{ formErr() }}
+      </div>
+      }
+
+      <div class="mt-4 flex items-center justify-end gap-3 pt-4 border-t border-border">
+        <a routerLink="/customers"
+          class="rounded-lg border border-border bg-white px-6 py-2.5 text-sm font-medium text-heading transition hover:bg-gray-50 cursor-pointer text-center"
+          [class.opacity-50]="formLoading()" [class.pointer-events-none]="formLoading()">
+          Cancel
+        </a>
+        <button type="submit"
+          class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+          [disabled]="formLoading() || form.invalid">
+          @if (formLoading()) {
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          Creating...
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clip-rule="evenodd" />
+          </svg>
+          Create Customer
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
