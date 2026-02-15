@@ -42,6 +42,14 @@ export class AuthService {
     );
   }
 
+  /** Update user profile (name/email). Normalizes response and updates state. */
+  updateProfile(payload: { name: string; email: string }): Observable<AuthResponse> {
+    return this.http.put<any>(`${this.API}/auth/profile`, payload).pipe(
+      map(res => this.normalizeAuthResponse(res)),
+      tap(res => this.storeAuth(res))
+    );
+  }
+
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<any>(`${this.API}/auth/register`, payload).pipe(
       map(res => this.normalizeAuthResponse(res)),
@@ -89,7 +97,7 @@ export class AuthService {
   }
 
   /** Store access token, refresh token, and user in localStorage and state. */
-  private storeAuth(res: AuthResponse) {
+  storeAuth(res: AuthResponse) {
     localStorage.setItem('auth_token', res.token);
     if (res.refreshToken) {
       localStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
