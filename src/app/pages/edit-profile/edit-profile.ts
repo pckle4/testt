@@ -52,11 +52,10 @@ export class EditProfile implements OnInit {
     }
 
     this.formLoading.set(true);
-    const { name, email } = this.form.getRawValue();
+    const payload = this.form.getRawValue();
 
-    this.http.put<any>(`${this.API}/auth/profile`, { name, email }).subscribe({
-      next: (res) => {
-        this.authService.storeAuth(res);
+    this.authService.updateProfile(payload).subscribe({
+      next: () => {
         this.formLoading.set(false);
         this.router.navigateByUrl('/dashboard');
       },
