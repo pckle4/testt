@@ -1,6 +1,5 @@
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,15 +11,19 @@ import { AuthService } from '../../core/services/auth/auth.service';
       [class.translate-x-0]="isOpen()"
       style="border-right: 1px solid var(--color-border);"
     >
-      <!-- edited: sidebar header with subtle gradient and logo -->
+      <!-- Sidebar header: logo matches header (grid icon + CRM) -->
       <div class="flex h-16 shrink-0 items-center border-b border-border bg-surface/50 px-5 py-4">
         <a
           routerLink="/dashboard"
           (click)="onNavClick()"
           class="flex items-center gap-2.5 rounded-lg no-underline transition-opacity hover:opacity-90"
         >
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-md shadow-primary/25">C</span>
-          <span class="text-xl font-extrabold tracking-tight text-heading">CRM</span>
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-md shadow-primary/25">
+            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+            </svg>
+          </span>
+          <span class="text-xl font-bold tracking-tight text-heading">CRM</span>
         </a>
       </div>
 
@@ -74,21 +77,7 @@ import { AuthService } from '../../core/services/auth/auth.service';
         </nav>
       </div>
 
-      <!-- edited: logout block with clearer separation -->
-      <div class="shrink-0 border-t border-border bg-surface/30 p-3">
-        <button
-          type="button"
-          (click)="onLogout()"
-          class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body transition-all duration-200 hover:bg-red-50 hover:text-accent-red active:scale-[0.99]"
-        >
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-accent-red">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </span>
-          Logout
-        </button>
-      </div>
+      <!-- Logout only in header profile dropdown (drawer), not in sidebar -->
     </aside>
   `,
   styles: [],
@@ -97,16 +86,7 @@ export class Sidebar {
   readonly isOpen = input<boolean>(true);
   readonly closeRequest = output<void>();
 
-  private readonly authService = inject(AuthService);
-
   onNavClick() {
     this.closeRequest.emit();
-  }
-
-  onLogout() {
-    if (confirm('Are you sure you want to log out?')) {
-      this.closeRequest.emit();
-      this.authService.logout();
-    }
   }
 }
