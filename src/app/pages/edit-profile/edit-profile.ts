@@ -2,7 +2,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth/auth.service';
+import { environment } from '../../../environments/environment';
+import { getErrorMessage } from '../../core/models/api-error.model';
 
 @Component({
   selector: 'app-edit-profile',
@@ -14,7 +17,9 @@ import { AuthService } from '../../core/services/auth/auth.service';
 export class EditProfile implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly API = environment.apiUrl;
 
   readonly formErr = signal('');
   readonly formLoading = signal(false);
@@ -49,9 +54,16 @@ export class EditProfile implements OnInit {
     this.formLoading.set(true);
     const { name, email } = this.form.getRawValue();
 
-    // Update frontend state and localStorage; backend profile update can be added later
-    this.authService.updateCurrentUser({ name, email });
-    this.formLoading.set(false);
-    this.router.navigateByUrl('/dashboard');
+    this.http.put<any>(`${this.API}/auth/profile`, { name, email }).subscribe({
+      next: (res) => {
+        this.authService.storeAuth(res);
+        this.formLoading.set(false);
+        this.router.navigateByUrl('/dashboard');
+      },
+      error: (err) => {
+        this.formErr.set(getErrorMessage(err, 'Unable to update profile. Please try again.'));
+        this.formLoading.set(false);
+      },
+    });
   }
 }
