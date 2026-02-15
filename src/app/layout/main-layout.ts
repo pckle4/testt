@@ -27,9 +27,10 @@ import { AuthService } from '../core/services/auth/auth.service';
       (click)="closeSidebar()"
     ></button>
 
-    <!-- edited: header — logo left, search bar center -->
-    <header class="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border bg-white px-4 shadow-sm md:px-6 transition-[margin] duration-300"
+    <!-- Header: logo left, search center (mobile + desktop), profile drawer at rightmost. Logout only inside profile dropdown. -->
+    <header class="sticky top-0 z-20 flex h-16 items-center border-b border-border bg-white px-3 shadow-sm md:px-6 transition-[margin] duration-300"
       [class.md:ml-64]="sidebarOpen()">
+      <!-- Left: hamburger + logo -->
       <div class="flex shrink-0 items-center gap-2">
         <button
           type="button"
@@ -45,29 +46,35 @@ import { AuthService } from '../core/services/auth/auth.service';
             }
           </svg>
         </button>
-        <a routerLink="/dashboard" class="flex items-center no-underline">
-          <span class="text-lg font-extrabold tracking-tight text-primary">CRM</span>
+        <a routerLink="/dashboard" class="flex items-center gap-2 no-underline">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-md shadow-primary/25">
+            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+            </svg>
+          </span>
+          <span class="text-lg font-bold tracking-tight text-heading hidden sm:inline">CRM</span>
         </a>
       </div>
 
-      <!-- edited: search bar hidden on mobile; visible from md up -->
-      <div class="hidden md:flex flex-1 justify-center min-w-0 max-w-2xl mx-4">
+      <!-- Center: search bar (middle of header on mobile and desktop) -->
+      <div class="flex flex-1 justify-center min-w-0 mx-2 md:mx-4">
         <button
           type="button"
           (click)="isSearchOpen.set(true)"
           aria-label="Open search"
-          class="group flex w-full cursor-pointer items-center justify-start gap-3 rounded-full border border-border bg-bg-subtle px-5 py-3 transition-all hover:border-primary shadow-sm hover:shadow-md active:scale-[0.99] min-h-[44px]"
+          class="group flex w-full max-w-2xl cursor-pointer items-center justify-center md:justify-start gap-3 rounded-full border border-border bg-bg-subtle px-4 py-2.5 md:px-5 md:py-3 transition-all hover:border-primary shadow-sm hover:shadow-md active:scale-[0.99] min-h-[42px]"
         >
           <svg class="h-5 w-5 shrink-0 text-body group-hover:text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <span class="flex-1 text-left text-sm font-medium text-body">Search clients, projects...</span>
+          <span class="flex-1 text-left text-sm font-medium text-body hidden md:inline">Search clients, projects...</span>
+          <span class="text-sm font-medium text-muted md:hidden">Search</span>
           <kbd class="hidden lg:inline-flex h-6 items-center rounded-md border border-border bg-white px-2 text-[11px] font-bold text-muted shadow-sm">/</kbd>
         </button>
       </div>
 
-      <!-- User profile badge: avatar, name, roles; dropdown with Edit Profile and Logout -->
-      <div class="flex shrink-0 items-center gap-2 md:gap-4">
+      <!-- Rightmost: profile only (dropdown/drawer contains Edit Profile + Logout; no logout in header) -->
+      <div class="flex shrink-0 ml-auto">
         <div class="relative profile-menu-container">
           <button
             type="button"
@@ -76,7 +83,7 @@ import { AuthService } from '../core/services/auth/auth.service';
             [class.bg-gray-50]="isProfileMenuOpen()"
             aria-label="User menu"
           >
-            <img [src]="userAvatar()" [alt]="userName()" class="h-9 w-9 rounded-full object-cover border border-border">
+            <img [src]="userAvatar()" [alt]="userName()" class="h-9 w-9 rounded-full object-cover border border-border shrink-0">
             <div class="hidden text-left md:block">
               <p class="text-sm font-bold text-heading leading-tight">{{ userName() }}</p>
               <p class="text-xs font-medium text-body leading-tight">{{ rolesLabel() }}</p>
@@ -85,8 +92,9 @@ import { AuthService } from '../core/services/auth/auth.service';
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+          <!-- Drawer-style dropdown: Edit Profile and Logout only here, not in header -->
           @if (isProfileMenuOpen()) {
-            <div class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-border bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-50 animate-in fade-in zoom-in-95 duration-100">
+            <div class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-border bg-white py-1 shadow-xl ring-1 ring-black ring-opacity-5 z-50 animate-in fade-in zoom-in-95 duration-100">
               <div class="px-4 py-2.5 border-b border-border">
                 <p class="text-sm font-bold text-heading">{{ userName() }}</p>
                 <p class="text-xs text-body mt-0.5">Roles: {{ rolesLabel() }}</p>
