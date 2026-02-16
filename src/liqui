@@ -1,0 +1,244 @@
+All Liquibase Formatted SQL Scripts (001-009)
+This file contains all the Liquibase migration scripts in one place. You can copy each block below into its own .sql file.
+
+0. db.changelog-master.xml
+xml
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <include file="001-create-roles.sql" relativeToChangelogFile="true"/>
+    <include file="002-create-users.sql" relativeToChangelogFile="true"/>
+    <include file="003-create-user-roles.sql" relativeToChangelogFile="true"/>
+    <include file="004-create-customers.sql" relativeToChangelogFile="true"/>
+    <include file="005-create-contacts.sql" relativeToChangelogFile="true"/>
+    <include file="006-create-notes.sql" relativeToChangelogFile="true"/>
+    <include file="007-seed-roles.sql" relativeToChangelogFile="true"/>
+    <include file="008-seed-admin.sql" relativeToChangelogFile="true"/>
+    <include file="009-create-audit-logs.sql" relativeToChangelogFile="true"/>
+</databaseChangeLog>
+1. 001-create-roles.sql
+sql
+--liquibase formatted sql
+--changeset ansh:001-create-roles
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'roles';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.roles (
+            id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+            name NVARCHAR(50) NOT NULL UNIQUE
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.roles;
+2. 002-create-users.sql
+sql
+--liquibase formatted sql
+--changeset ansh:002-create-users
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'users';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.users (
+            id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+            email NVARCHAR(255) NOT NULL UNIQUE,
+            name NVARCHAR(50) NOT NULL,
+            password NVARCHAR(255) NOT NULL,
+            enabled BIT DEFAULT 1,
+            created_at DATETIMEOFFSET DEFAULT SYSDATETIMEOFFSET(),
+            updated_at DATETIMEOFFSET DEFAULT SYSDATETIMEOFFSET()
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.users;
+3. 003-create-user-roles.sql
+sql
+--liquibase formatted sql
+--changeset ansh:003-create-user-roles
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'user_roles';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.user_roles (
+            user_id UNIQUEIDENTIFIER NOT NULL,
+            role_id UNIQUEIDENTIFIER NOT NULL,
+            PRIMARY KEY (user_id, role_id),
+            FOREIGN KEY (user_id) REFERENCES ${schema_name}.users(id),
+            FOREIGN KEY (role_id) REFERENCES ${schema_name}.roles(id)
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.user_roles;
+4. 004-create-customers.sql
+sql
+--liquibase formatted sql
+--changeset ansh:004-create-customers
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'customers';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.customers (
+            id BIGINT IDENTITY(1,1) PRIMARY KEY,
+            name NVARCHAR(255) NOT NULL,
+            email NVARCHAR(255),
+            phone NVARCHAR(50),
+            address NVARCHAR(MAX),
+            company NVARCHAR(255),
+            status NVARCHAR(50) DEFAULT 'ACTIVE'
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.customers;
+5. 005-create-contacts.sql
+sql
+--liquibase formatted sql
+--changeset ansh:005-create-contacts
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'contacts';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.contacts (
+            id BIGINT IDENTITY(1,1) PRIMARY KEY,
+            customer_id BIGINT NOT NULL,
+            name NVARCHAR(255) NOT NULL,
+            position NVARCHAR(255),
+            email NVARCHAR(255),
+            phone NVARCHAR(50),
+            FOREIGN KEY (customer_id) REFERENCES ${schema_name}.customers(id) ON DELETE CASCADE
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.contacts;
+6. 006-create-notes.sql
+sql
+--liquibase formatted sql
+--changeset ansh:006-create-notes
+DECLARE @schemaName NVARCHAR(50) = '${schema_name}';
+DECLARE @tableName NVARCHAR(50) = 'notes';
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = @tableName AND schema_id = SCHEMA_ID(@schemaName))
+    BEGIN
+        CREATE TABLE ${schema_name}.notes (
+            id BIGINT IDENTITY(1,1) PRIMARY KEY,
+            customer_id BIGINT NOT NULL,
+            title NVARCHAR(255),
+            content NVARCHAR(MAX),
+            created_at DATETIMEOFFSET DEFAULT SYSDATETIMEOFFSET(),
+            updated_at DATETIMEOFFSET DEFAULT SYSDATETIMEOFFSET(),
+            FOREIGN KEY (customer_id) REFERENCES ${schema_name}.customers(id) ON DELETE CASCADE
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.notes;
+7. 007-seed-roles.sql
+sql
+--liquibase formatted sql
+--changeset ansh:007-seed-roles
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT 1 FROM ${schema_name}.roles WHERE name = 'ADMIN')
+        INSERT INTO ${schema_name}.roles (name) VALUES ('ADMIN');
+    
+    IF NOT EXISTS (SELECT 1 FROM ${schema_name}.roles WHERE name = 'USER')
+        INSERT INTO ${schema_name}.roles (name) VALUES ('USER');
+        
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+8. 008-seed-admin.sql
+sql
+--liquibase formatted sql
+--changeset ansh:008-seed-admin
+DECLARE @adminEmail NVARCHAR(255) = 'admin@crm.com';
+DECLARE @adminPassword NVARCHAR(255) = '$2a$10$YourBcryptHashHere'; -- Update this!
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT 1 FROM ${schema_name}.users WHERE email = @adminEmail)
+    BEGIN
+        DECLARE @adminId UNIQUEIDENTIFIER = NEWID();
+        
+        INSERT INTO ${schema_name}.users (id, email, name, password, enabled)
+        VALUES (@adminId, @adminEmail, 'System Admin', @adminPassword, 1);
+        
+        -- Assign ADMIN role
+        INSERT INTO ${schema_name}.user_roles (user_id, role_id)
+        SELECT @adminId, id FROM ${schema_name}.roles WHERE name = 'ADMIN';
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+9. 009-create-audit-logs.sql
+sql
+--liquibase formatted sql
+--changeset ansh:009-create-audit-logs
+BEGIN TRANSACTION;
+BEGIN TRY
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'audit_logs' AND schema_id = SCHEMA_ID('${schema_name}'))
+    BEGIN
+        CREATE TABLE ${schema_name}.audit_logs (
+            id BIGINT IDENTITY(1,1) PRIMARY KEY,
+            user_id UNIQUEIDENTIFIER,
+            action NVARCHAR(255) NOT NULL,
+            entity_name NVARCHAR(100),
+            entity_id NVARCHAR(100),
+            details NVARCHAR(MAX),
+            created_at DATETIMEOFFSET DEFAULT SYSDATETIMEOFFSET()
+        );
+    END
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+--rollback DROP TABLE ${schema_name}.audit_logs;
